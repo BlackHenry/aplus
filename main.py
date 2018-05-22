@@ -35,7 +35,7 @@ class Scraper:
 
     def process_subcategory(self, url):
         try:
-            page = request.urlopen(url.replace('у', 'y').replace('с', 'c'))
+            page = request.urlopen(url.replace('у', 'y').replace('с', 'c') + '?limit=1000')
         except Exception:
             return
         soup = bs(page, 'html.parser')
@@ -67,11 +67,12 @@ class Scraper:
             _ += 1
         self.db.to_csv('Database.csv')
 
+
 '''
 s = Scraper()
 s.scrape()
 '''
-df = pd.read_csv('Database (1).csv', encoding='utf-8')
+df = pd.read_csv('Database (1).csv', encoding='cp1251')
 writer = pd.ExcelWriter('output.xlsx')
 df.to_excel(writer, 'Sheet1')
 wb = writer.book
@@ -84,10 +85,9 @@ for _, image_url in zip(range(df['Image'].size), df['Image']):
     offset_x = (185 - img.size[0]*scale) / 2
     offset_y = (185 - img.size[1]*scale) / 2
     ws.set_row(_, 138)
-    ws.insert_image(_ + 1, 6, image_url, {'image_data': image_data, 'x_scale': scale, 'y_scale': scale,
+    ws.insert_image(_ + 1, 4, image_url, {'image_data': image_data, 'x_scale': scale, 'y_scale': scale,
                                           'y_offset': offset_y, 'x_offset': offset_x})
 ws.set_row(0, 20)
 ws.set_column(0, 8, 25.5)
 writer.save()
 wb.close()
-
